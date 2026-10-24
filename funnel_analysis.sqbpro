@@ -1,0 +1,466 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="dental_app.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="812"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="events" custom_title="0" dock_id="3" table="4,6:mainevents"/><dock_state state="000000ff00000000fd00000001000000020000000000000000fc0100000003fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000011800ffffff000000000000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">SELECT * 
+FROM users; 
+
+SELECT * 
+FROM sessions; 
+
+SELECT
+    event_name,
+    COUNT(DISTINCT user_id) AS users
+FROM events
+WHERE event_name IN (
+    'app_open',
+    'view_services',
+    'view_service_details',
+    'view_doctor',
+    'select_time',
+    'book_appointment'
+)
+GROUP BY event_name
+ORDER BY CASE event_name
+    WHEN 'app_open' THEN 1
+    WHEN 'view_services' THEN 2
+    WHEN 'view_service_details' THEN 3
+    WHEN 'view_doctor' THEN 4
+    WHEN 'select_time' THEN 5
+    WHEN 'book_appointment' THEN 6
+END;
+
+SELECT event_name, event_time, user_id, count(*) as duplicate
+FROM events
+GROUP BY user_id, event_name, event_time
+HAVING count(*) &gt; 1; 
+-- No duplicates 
+
+
+-- What do we want to do? First: display the first time someone opened an app, first time they viewed services, ect. 
+
+SELECT user_id,
+MIN(CASE WHEN event_name  = 'app_open' THEN event_time
+ ELSE NULL 
+ END)
+  as first_app_opened, 
+MIN(CASE WHEN event_name  = 'view_services' THEN event_time
+ ELSE NULL 
+ END)
+  as first_view_services,
+  MIN(CASE WHEN event_name  = 'view_service_details' THEN event_time
+ ELSE NULL 
+ END)
+  as first_view_service_details,
+MIN(CASE WHEN event_name  = 'view_doctor' THEN event_time
+ ELSE NULL 
+ END)
+  as first_view_doctor,
+  MIN(CASE WHEN event_name  = 'select_time' THEN event_time
+ ELSE NULL 
+ END)
+  as first_select_time,
+MIN(CASE WHEN event_name  = 'book_appointment' THEN event_time
+ END)
+  as first_booked_appointment
+FROM events
+GROUP BY  user_id 
+;
+
+WITH user_steps AS (
+SELECT user_id,
+MIN(CASE WHEN event_name  = 'app_open' THEN event_time
+ ELSE NULL 
+ END)
+  as first_app_opened, 
+MIN(CASE WHEN event_name  = 'view_services' THEN event_time
+ ELSE NULL 
+ END)
+  as first_view_services,
+  MIN(CASE WHEN event_name  = 'view_service_details' THEN event_time
+ ELSE NULL 
+ END)
+  as first_view_service_details,
+MIN(CASE WHEN event_name  = 'view_doctor' THEN event_time
+ ELSE NULL 
+ END)
+  as first_view_doctor,
+  MIN(CASE WHEN event_name  = 'select_time' THEN event_time
+ ELSE NULL 
+ END)
+  as first_select_time,
+MIN(CASE WHEN event_name  = 'book_appointment' THEN event_time
+ END)
+  as first_booked_appointment
+FROM events
+GROUP BY  user_id 
+) 
+SELECT * 
+FROM user_steps 
+WHERE first_app_opened IS NOT NULL 
+      AND first_view_services IS NOT NULL 
+	  AND first_view_services &lt; first_app_opened;
+-- No results found 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</sql><current_tab id="0"/></tab_sql></sqlb_project>
